@@ -1,0 +1,29 @@
+name: Download latest Google Survey Excel
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *' # Runs every first day of the month at 0000
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner
+
+      - name: Download a file
+        run: curl -L -o "Developer Kaki_Developer Salary Survey Latest Results.xlsx" https://docs.google.com/spreadsheets/d/11OrbJjxKWXm9qZUmLi0zuWvOAhW4CSflWZYb5EVgve4/export?format=xlsx&id=11OrbJjxKWXm9qZUmLi0zuWvOAhW4CSflWZYb5EVgve4
+ 
+      - name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "updated file" --allow-empty)
+          
+      - name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main 
